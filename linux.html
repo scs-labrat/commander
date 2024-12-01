@@ -1,0 +1,363 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select, input[type="number"] {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.sub-option {
+    margin-left: 20px;
+    padding: 10px;
+    border-left: 1px solid #00ff00;
+    margin-top: 5px;
+    display: none;
+}
+
+.sub-option.visible {
+    display: block;
+}
+
+h1 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.category-label {
+    color: #00ff00;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.command-description {
+    color: #888;
+    font-size: 0.9em;
+    margin: 5px 0 15px 0;
+    font-style: italic;
+}
+</style></head><body>
+<div class="container">
+    <h1>Linux System Enumeration & Privilege Escalation</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Linux Commands Generator</h2>
+            <div class="tool-description">Collection of powerful Bash commands for Linux system enumeration and privilege escalation</div>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>System Information</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="basic-sysinfo"> Basic System Info</div>
+                    <div><input type="checkbox" id="kernel-info"> Kernel Information</div>
+                    <div><input type="checkbox" id="installed-packages"> Installed Packages</div>
+                    <div><input type="checkbox" id="running-processes"> Running Processes</div>
+                    <div><input type="checkbox" id="network-info"> Network Configuration</div>
+                    <div><input type="checkbox" id="cron-jobs"> Cron Jobs</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>User & Permission Analysis</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="current-user"> Current User Context</div>
+                    <div><input type="checkbox" id="sudo-rights"> Sudo Rights</div>
+                    <div><input type="checkbox" id="suid-bins"> SUID Binaries</div>
+                    <div><input type="checkbox" id="capabilities"> Linux Capabilities</div>
+                    <div><input type="checkbox" id="logged-users"> Logged In Users</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Service & Process Analysis</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="service-status"> Service Status</div>
+                    <div><input type="checkbox" id="listening-ports"> Listening Ports</div>
+                    <div><input type="checkbox" id="root-services"> Root Services</div>
+                    <div><input type="checkbox" id="process-paths"> Process Paths</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>File System Analysis</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="writable-dirs"> World-Writable Directories</div>
+                    <div><input type="checkbox" id="sensitive-files"> Sensitive Files</div>
+                    <div><input type="checkbox" id="bash-history"> Shell History Files</div>
+                    <div><input type="checkbox" id="ssh-files"> SSH Files/Config</div>
+                </div>
+            </div>
+
+            <button onclick="generateCommands()" class="generate-button">Generate Bash Commands</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">PS></span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateCommands() {
+    let commands = [];
+    
+    // System Information Commands
+    if (document.getElementById('basic-sysinfo').checked) {
+        commands.push('# Basic System Information\n' +
+            'uname -a\n' +
+            'cat /etc/issue\n' +
+            'cat /etc/*-release\n' +
+            'lscpu');
+    }
+    
+    if (document.getElementById('kernel-info').checked) {
+        commands.push('# Kernel Information\n' +
+            'uname -r\n' +
+            'cat /proc/version\n' +
+            'rpm -q kernel\n' +
+            'dmesg | grep Linux');
+    }
+
+    if (document.getElementById('installed-packages').checked) {
+        commands.push('# Installed Packages\n' +
+            'dpkg -l 2>/dev/null\n' +
+            'rpm -qa 2>/dev/null\n' +
+            'ls -la /etc/apt/sources.list.d/');
+    }
+
+    if (document.getElementById('running-processes').checked) {
+        commands.push('# Running Processes\n' +
+            'ps aux\n' +
+            'ps -ef | grep root\n' +
+            'top -n 1 -b');
+    }
+
+    if (document.getElementById('network-info').checked) {
+        commands.push('# Network Configuration\n' +
+            'ip a\n' +
+            'netstat -tunlp\n' +
+            'cat /etc/resolv.conf\n' +
+            'route -n');
+    }
+
+    if (document.getElementById('cron-jobs').checked) {
+        commands.push('# Cron Jobs\n' +
+            'ls -la /etc/cron*\n' +
+            'cat /etc/crontab\n' +
+            'for user in $(cut -f1 -d: /etc/passwd); do crontab -l -u $user 2>/dev/null; done');
+    }
+
+    // User & Permission Commands
+    if (document.getElementById('current-user').checked) {
+        commands.push('# Current User Context\n' +
+            'id\n' +
+            'sudo -l\n' +
+            'cat /etc/passwd\n' +
+            'cat /etc/group');
+    }
+
+    if (document.getElementById('sudo-rights').checked) {
+        commands.push('# Sudo Rights\n' +
+            'sudo -l\n' +
+            'cat /etc/sudoers 2>/dev/null\n' +
+            'ls -la /etc/sudoers.d/ 2>/dev/null');
+    }
+
+    if (document.getElementById('suid-bins').checked) {
+        commands.push('# SUID Binaries\n' +
+            'find / -perm -4000 -type f -exec ls -la {} \\; 2>/dev/null\n' +
+            'find / -uid 0 -perm -4000 -type f 2>/dev/null');
+    }
+
+    if (document.getElementById('capabilities').checked) {
+        commands.push('# Linux Capabilities\n' +
+            'getcap -r / 2>/dev/null\n' +
+            'cat /proc/sys/kernel/cap_last_cap');
+    }
+
+    // Service Commands
+    if (document.getElementById('service-status').checked) {
+        commands.push('# Service Status\n' +
+            'systemctl list-units --type=service\n' +
+            'service --status-all\n' +
+            'ls -la /etc/init.d/');
+    }
+
+    if (document.getElementById('listening-ports').checked) {
+        commands.push('# Listening Ports\n' +
+            'netstat -tunlp\n' +
+            'ss -tunlp\n' +
+            'lsof -i');
+    }
+
+    // File System Commands
+    if (document.getElementById('writable-dirs').checked) {
+        commands.push('# World-Writable Directories\n' +
+            'find / -writable -type d 2>/dev/null\n' +
+            'find / -perm -222 -type d 2>/dev/null\n' +
+            'find / -perm -o+w -type d 2>/dev/null');
+    }
+
+    if (document.getElementById('sensitive-files').checked) {
+        commands.push('# Sensitive Files Search\n' +
+            'find / -name "*.conf" -o -name "*.config" -o -name "*.cnf" 2>/dev/null\n' +
+            'find /home -name "*.bash_history" -o -name "*.sh" 2>/dev/null\n' +
+            'find / -name "id_rsa*" -o -name "id_dsa*" -o -name "*.pem" 2>/dev/null');
+    }
+
+    const scriptElement = document.getElementById('script-content');
+    if (scriptElement) {
+        scriptElement.textContent = commands.join('\n\n');
+    }
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content')?.textContent || '';
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Commands copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy commands:', err);
+        alert('Failed to copy commands to clipboard');
+    });
+}
+
+// Generate initial commands when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    generateCommands();
+});
+</script>
+</body></html>

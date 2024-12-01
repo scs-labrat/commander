@@ -1,0 +1,281 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+input[type="text"], input[type="number"] {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 3px;
+    width: 150px;
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+</style></head><body>
+<div class="container">
+    <h1>SSH & Socat Connection Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>SSH & Socat Tunneling Commands</h2>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>SSH Basic Connection</h3>
+                <div>
+                    <input type="text" id="ssh-host" placeholder="Target Host">
+                    <input type="text" id="ssh-user" placeholder="Username">
+                    <input type="number" id="ssh-port" placeholder="Port" value="22">
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>File Transfer Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="scp-transfer"> SCP Transfer</div>
+                    <div><input type="checkbox" id="sftp-commands"> SFTP Commands</div>
+                    <div><input type="checkbox" id="rsync-sync"> Rsync Sync</div>
+                </div>
+                <input type="text" id="local-path" placeholder="Local Path">
+                <input type="text" id="remote-path" placeholder="Remote Path">
+            </div>
+
+            <div class="option-group">
+                <h3>Port Forwarding</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="local-forward"> Local Port Forward</div>
+                    <div><input type="checkbox" id="remote-forward"> Remote Port Forward</div>
+                    <div><input type="checkbox" id="dynamic-forward"> Dynamic SOCKS Proxy</div>
+                </div>
+                <input type="number" id="local-port" placeholder="Local Port" value="8080">
+                <input type="number" id="remote-port" placeholder="Remote Port" value="80">
+                <input type="text" id="target-host" placeholder="Target Host">
+            </div>
+
+            <div class="option-group">
+                <h3>Socat Relay Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="socat-relay"> Basic Relay</div>
+                    <div><input type="checkbox" id="socat-encrypt"> Encrypted Relay</div>
+                    <div><input type="checkbox" id="socat-proxy"> SOCKS Proxy</div>
+                </div>
+                <input type="number" id="socat-listen-port" placeholder="Listen Port" value="4444">
+                <input type="number" id="socat-target-port" placeholder="Target Port" value="5555">
+            </div>
+
+            <button onclick="generateCommands()" class="generate-button">Generate Commands</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">$</span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateCommands() {
+    let commands = [];
+    
+    const sshHost = document.getElementById('ssh-host').value || 'remote_host';
+    const sshUser = document.getElementById('ssh-user').value || 'user';
+    const sshPort = document.getElementById('ssh-port').value || '22';
+    const localPath = document.getElementById('local-path').value || '/local/path';
+    const remotePath = document.getElementById('remote-path').value || '/remote/path';
+    const localPort = document.getElementById('local-port').value || '8080';
+    const remotePort = document.getElementById('remote-port').value || '80';
+    const targetHost = document.getElementById('target-host').value || 'target_host';
+    const socatListenPort = document.getElementById('socat-listen-port').value || '4444';
+    const socatTargetPort = document.getElementById('socat-target-port').value || '5555';
+
+    commands.push('# Basic SSH Connection\n' +
+        `ssh -p ${sshPort} ${sshUser}@${sshHost}\n` +
+        '# With Verbose Output\n' +
+        `ssh -vv -p ${sshPort} ${sshUser}@${sshHost}`);
+
+    if (document.getElementById('scp-transfer').checked) {
+        commands.push('# SCP File Transfer\n' +
+            `# Upload:\nscp -P ${sshPort} ${localPath} ${sshUser}@${sshHost}:${remotePath}\n` +
+            `# Download:\nscp -P ${sshPort} ${sshUser}@${sshHost}:${remotePath} ${localPath}`);
+    }
+
+    if (document.getElementById('sftp-commands').checked) {
+        commands.push('# SFTP Commands\n' +
+            `sftp -P ${sshPort} ${sshUser}@${sshHost}\n` +
+            'Common SFTP commands:\n' +
+            'put filename    # Upload file\n' +
+            'get filename    # Download file\n' +
+            'ls             # List files\n' +
+            'pwd            # Print working directory');
+    }
+
+    if (document.getElementById('rsync-sync').checked) {
+        commands.push('# Rsync Over SSH\n' +
+            `rsync -avz -e "ssh -p ${sshPort}" ${localPath} ${sshUser}@${sshHost}:${remotePath}`);
+    }
+
+    if (document.getElementById('local-forward').checked) {
+        commands.push('# Local Port Forwarding\n' +
+            `ssh -L ${localPort}:${targetHost}:${remotePort} ${sshUser}@${sshHost}`);
+    }
+
+    if (document.getElementById('remote-forward').checked) {
+        commands.push('# Remote Port Forwarding\n' +
+            `ssh -R ${remotePort}:${targetHost}:${localPort} ${sshUser}@${sshHost}`);
+    }
+
+    if (document.getElementById('dynamic-forward').checked) {
+        commands.push('# Dynamic SOCKS Proxy\n' +
+            `ssh -D ${localPort} -N ${sshUser}@${sshHost}`);
+    }
+
+    if (document.getElementById('socat-relay').checked) {
+        commands.push('# Socat Basic TCP Relay\n' +
+            `# Listener:\nsocat TCP-LISTEN:${socatListenPort},fork TCP:${targetHost}:${socatTargetPort}\n` +
+            '# Connector:\n' +
+            `socat TCP:${sshHost}:${socatListenPort} TCP-LISTEN:${socatTargetPort},fork`);
+    }
+
+    if (document.getElementById('socat-encrypt').checked) {
+        commands.push('# Socat Encrypted Relay\n' +
+            '# Generate Certificate:\n' +
+            'openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.key\n' +
+            'cat cert.key cert.pem > cert.pem\n' +
+            '# Encrypted Listener:\n' +
+            `socat OPENSSL-LISTEN:${socatListenPort},cert=cert.pem,verify=0,fork TCP:${targetHost}:${socatTargetPort}\n` +
+            '# Encrypted Connector:\n' +
+            `socat TCP-LISTEN:${socatTargetPort},fork OPENSSL:${sshHost}:${socatListenPort},verify=0`);
+    }
+
+    if (document.getElementById('socat-proxy').checked) {
+        commands.push('# Socat SOCKS Proxy\n' +
+            `socat TCP-LISTEN:${socatListenPort},fork SOCKS4A:${targetHost}:${socatTargetPort},socksport=${remotePort}`);
+    }
+
+    const scriptElement = document.getElementById('script-content');
+    scriptElement.textContent = commands.join('\n\n');
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content').textContent;
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Commands copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy commands:', err);
+        alert('Failed to copy commands to clipboard');
+    });
+}
+
+// Generate initial commands when page loads
+document.addEventListener('DOMContentLoaded', generateCommands);
+</script>
+</body></html>

@@ -1,0 +1,308 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+</style></head><body>
+<div class="container">
+    <h1>Recon Script Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Recon Configuration</h2>
+            <div class="tool-description">Generate a comprehensive reconnaissance script using multiple tools</div>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>Target Settings</h3>
+                <label>Domain:</label>
+                <input type="text" id="domain" placeholder="example.com">
+                <label>Output Directory:</label>
+                <input type="text" id="output-dir" placeholder="recon">
+            </div>
+
+            <div class="option-group">
+                <h3>Tool Selection</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="use-assetfinder" checked> Assetfinder</div>
+                    <div><input type="checkbox" id="use-subfinder" checked> Subfinder</div>
+                    <div><input type="checkbox" id="use-waybackurls" checked> Waybackurls</div>
+                    <div><input type="checkbox" id="use-httprobe" checked> HTTProbe</div>
+                    <div><input type="checkbox" id="use-screenshots" checked> Take Screenshots</div>
+                    <div><input type="checkbox" id="use-ports" checked> Port Scanning</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Additional Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="resolve-domains" checked> Resolve Domains</div>
+                    <div><input type="checkbox" id="sort-unique" checked> Sort & Unique Results</div>
+                    <div><input type="checkbox" id="backup-results" checked> Backup Results</div>
+                </div>
+            </div>
+
+            <button onclick="generateScript()" class="generate-button">Generate Script</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">$</span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateScript() {
+    const domain = document.getElementById('domain').value || '$1';
+    const outputDir = document.getElementById('output-dir').value || 'recon';
+    
+    let script = `#!/bin/bash
+
+# Usage: ./recon.sh domain.com
+domain="${domain}"
+output_dir="${outputDir}/$domain"
+date_str=$(date +%Y%m%d_%H%M%S)
+
+# Create directory structure
+mkdir -p "$output_dir"/{subdomains,wayback,screenshots,ports,temp}
+
+echo "[+] Starting reconnaissance for $domain..."
+
+`;
+
+    if (document.getElementById('use-assetfinder').checked) {
+        script += `
+# Assetfinder
+echo "[+] Running assetfinder..."
+assetfinder --subs-only "$domain" > "$output_dir/temp/assetfinder.txt"
+`;
+    }
+
+    if (document.getElementById('use-subfinder').checked) {
+        script += `
+# Subfinder
+echo "[+] Running subfinder..."
+subfinder -d "$domain" -silent > "$output_dir/temp/subfinder.txt"
+`;
+    }
+
+    if (document.getElementById('sort-unique').checked) {
+        script += `
+# Combine and sort subdomains
+echo "[+] Combining and sorting subdomains..."
+cat "$output_dir/temp/"*.txt | sort -u > "$output_dir/subdomains/all_subdomains.txt"
+`;
+    }
+
+    if (document.getElementById('resolve-domains').checked) {
+        script += `
+# Resolve domains
+echo "[+] Resolving domains..."
+cat "$output_dir/subdomains/all_subdomains.txt" | httprobe > "$output_dir/subdomains/alive_subdomains.txt"
+`;
+    }
+
+    if (document.getElementById('use-waybackurls').checked) {
+        script += `
+# Waybackurls
+echo "[+] Fetching URLs from Wayback Machine..."
+cat "$output_dir/subdomains/alive_subdomains.txt" | waybackurls | sort -u > "$output_dir/wayback/waybackurls.txt"
+
+# Extract interesting endpoints
+echo "[+] Extracting interesting endpoints..."
+cat "$output_dir/wayback/waybackurls.txt" | grep -i "\\.js$" > "$output_dir/wayback/javascript_files.txt"
+cat "$output_dir/wayback/waybackurls.txt" | grep -i "\\.php$" > "$output_dir/wayback/php_files.txt"
+cat "$output_dir/wayback/waybackurls.txt" | grep -i "\\.aspx$" > "$output_dir/wayback/aspx_files.txt"
+cat "$output_dir/wayback/waybackurls.txt" | grep -i "\\?|&" > "$output_dir/wayback/parameters.txt"
+`;
+    }
+
+    if (document.getElementById('use-ports').checked) {
+        script += `
+# Quick port scan
+echo "[+] Running port scan..."
+for subdomain in $(cat "$output_dir/subdomains/alive_subdomains.txt"); do
+    nmap -p- --min-rate 10000 -oN "$output_dir/ports/\\$(echo $subdomain | sed 's/https\\?:\\/\\///g').txt" $subdomain
+done
+`;
+    }
+
+    if (document.getElementById('use-screenshots').checked) {
+        script += `
+# Take screenshots
+echo "[+] Taking screenshots..."
+gowitness file -f "$output_dir/subdomains/alive_subdomains.txt" -P "$output_dir/screenshots/" --no-http
+`;
+    }
+
+    if (document.getElementById('backup-results').checked) {
+        script += `
+# Backup results
+echo "[+] Creating backup..."
+tar czf "$output_dir/../$domain_$date_str.tar.gz" "$output_dir/"
+`;
+    }
+
+    script += `
+echo "[+] Reconnaissance completed!"
+echo "[+] Results saved in $output_dir"
+`;
+
+    const scriptElement = document.getElementById('script-content');
+    if (scriptElement) {
+        scriptElement.textContent = script;
+    }
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content')?.textContent || '';
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Script copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy script:', err);
+        alert('Failed to copy script to clipboard');
+    });
+}
+
+// Generate initial script when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    generateScript();
+});
+</script>
+</body></html>

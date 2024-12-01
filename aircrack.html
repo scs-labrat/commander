@@ -1,0 +1,298 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+</style></head><body>
+<div class="container">
+    <h1>Aircrack-ng Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Aircrack-ng Configuration</h2>
+            <div class="tool-description">WiFi Security Assessment Suite</div>
+        </div>
+        
+        <div class="tool-content active">
+            <!-- Input File Options -->
+            <div class="option-group">
+                <h3>Input Files</h3>
+                <label>Capture File Path:</label>
+                <input type="text" id="capture-file" placeholder="/path/to/capture.cap">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="combine-captures" value="-r"> Multiple capture files</div>
+                </div>
+            </div>
+
+            <!-- Attack Options -->
+            <div class="option-group">
+                <h3>Attack Configuration</h3>
+                <label>ESSID (if known):</label>
+                <input type="text" id="essid" placeholder="Target network name">
+                <label>BSSID:</label>
+                <input type="text" id="bssid" placeholder="00:11:22:33:44:55">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="wep" value="-a 1"> WEP attack</div>
+                    <div><input type="checkbox" id="wpa" value="-a 2"> WPA/WPA2 attack</div>
+                    <div><input type="checkbox" id="wpa3" value="-a 3"> WPA3 attack</div>
+                </div>
+            </div>
+
+            <!-- Dictionary Options -->
+            <div class="option-group">
+                <h3>Dictionary Configuration</h3>
+                <label>Wordlist Path:</label>
+                <input type="text" id="wordlist" placeholder="/path/to/wordlist.txt">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="use-cpu" value="-S"> CPU only mode</div>
+                    <div><input type="checkbox" id="use-gpu" value="-g"> Use GPU acceleration</div>
+                </div>
+            </div>
+
+            <!-- Performance Options -->
+            <div class="option-group">
+                <h3>Performance Settings</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="threads" value="-X"> Multi-threading</div>
+                    <div><input type="checkbox" id="fast" value="-F"> KoreK optimization</div>
+                    <div><input type="checkbox" id="fudge" value="-f 2"> PTW debug</div>
+                </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="option-group">
+                <h3>Advanced Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="ivs-only" value="-i"> IVs only</div>
+                    <div><input type="checkbox" id="debug" value="-D"> Debug mode</div>
+                    <div><input type="checkbox" id="quiet" value="-q"> Quiet mode</div>
+                    <div><input type="checkbox" id="no-progress" value="-p"> No progress</div>
+                </div>
+            </div>
+
+            <!-- Output Options -->
+            <div class="option-group">
+                <h3>Output Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="show-keys" value="-s"> Show ASCII keys</div>
+                    <div><input type="checkbox" id="keyout" value="-l"> Write key to file</div>
+                    <div><input type="checkbox" id="logfile" value="-M"> Write session log</div>
+                </div>
+            </div>
+
+            <button onclick="generateAircrackCommand()" class="generate-button">Generate Command</button>
+        </div>
+    </div>
+
+    <!-- Command Output -->
+    <div id="command-output">
+        <span class="blink">$</span> <span id="command-text"></span>
+        <button class="copy-button" onclick="copyCommand()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateAircrackCommand() {
+    const captureFile = document.getElementById('capture-file')?.value || '';
+    const essid = document.getElementById('essid')?.value || '';
+    const bssid = document.getElementById('bssid')?.value || '';
+    const wordlist = document.getElementById('wordlist')?.value || '';
+    let options = [];
+    
+    // Add input files
+    if (captureFile) {
+        options.push(`-r ${captureFile}`);
+    }
+    
+    // Add ESSID/BSSID if provided
+    if (essid) options.push(`-e "${essid}"`);
+    if (bssid) options.push(`-b ${bssid}`);
+    
+    // Add wordlist if provided
+    if (wordlist) {
+        options.push(`-w ${wordlist}`);
+    }
+    
+    // Add all other checked options
+    const checkboxIds = [
+        'combine-captures', 'wep', 'wpa', 'wpa3',
+        'use-cpu', 'use-gpu', 'threads', 'fast',
+        'fudge', 'ivs-only', 'debug', 'quiet',
+        'no-progress', 'show-keys', 'keyout', 'logfile'
+    ];
+    
+    checkboxIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element?.checked) {
+            options.push(element.value);
+        }
+    });
+    
+    // Construct final command
+    const command = `aircrack-ng ${options.join(' ')}`
+        .replace(/\s+/g, ' ')
+        .trim();
+    
+    const commandTextElement = document.getElementById('command-text');
+    if (commandTextElement) {
+        commandTextElement.textContent = command;
+    }
+}
+
+function copyCommand() {
+    const commandText = document.getElementById('command-text')?.textContent || '';
+    navigator.clipboard.writeText(commandText).then(() => {
+        alert('Command copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert('Failed to copy command to clipboard');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateAircrackCommand();
+});
+</script>
+</body></html>

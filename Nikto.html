@@ -1,0 +1,310 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+</style></head><body>
+<div class="container">
+    <h1>Nikto Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Nikto Configuration</h2>
+            <div class="tool-description">Web Server Scanner for Vulnerabilities and Misconfigurations</div>
+        </div>
+        
+        <div class="tool-content active">
+            <!-- Target Settings -->
+            <div class="option-group">
+                <h3>Target Settings</h3>
+                <label>Host:</label>
+                <input type="text" id="host" placeholder="example.com or http://example.com">
+                <label>Port:</label>
+                <input type="text" id="port" placeholder="80">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="ssl" value="-ssl"> Force SSL</div>
+                    <div><input type="checkbox" id="nossl" value="-nossl"> Disable SSL</div>
+                </div>
+            </div>
+
+            <!-- Scan Options -->
+            <div class="option-group">
+                <h3>Scan Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="dbcheck" value="-dbcheck"> Check Database</div>
+                    <div><input type="checkbox" id="followredirects" value="-followredirects"> Follow Redirects</div>
+                    <div><input type="checkbox" id="nofollowredirects" value="-nofollowredirects"> No Redirects</div>
+                    <div><input type="checkbox" id="nokeepalive" value="-nokeepalive"> No Keep-Alive</div>
+                    <div><input type="checkbox" id="nointeractive" value="-nointeractive"> Non-Interactive Mode</div>
+                    <div><input type="checkbox" id="cookies" value="-cookies"> Show Cookies</div>
+                </div>
+            </div>
+
+            <!-- Authentication -->
+            <div class="option-group">
+                <h3>Authentication</h3>
+                <label>Username:</label>
+                <input type="text" id="username" placeholder="username">
+                <label>Password:</label>
+                <input type="text" id="password" placeholder="password">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="basic" value="-basic"> Basic Auth</div>
+                </div>
+            </div>
+
+            <!-- Output Options -->
+            <div class="option-group">
+                <h3>Output Options</h3>
+                <label>Output Format:</label>
+                <select id="format">
+                    <option value="">Default</option>
+                    <option value="csv">CSV</option>
+                    <option value="txt">Text</option>
+                    <option value="htm">HTML</option>
+                    <option value="xml">XML</option>
+                </select>
+                <label>Output File:</label>
+                <input type="text" id="output" placeholder="scan-results.txt">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="verbose" value="-verbose"> Verbose Output</div>
+                    <div><input type="checkbox" id="debug" value="-debug"> Debug Mode</div>
+                </div>
+            </div>
+
+            <!-- Tuning Options -->
+            <div class="option-group">
+                <h3>Tuning Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="evasion" value="-evasion 1"> Enable Evasion</div>
+                    <div><input type="checkbox" id="mutate" value="-mutate"> Mutate Scan</div>
+                    <div><input type="checkbox" id="timeout" value="-timeout 30"> Set Timeout (30s)</div>
+                </div>
+            </div>
+
+            <button onclick="generateNiktoCommand()" class="generate-button">Generate Command</button>
+        </div>
+    </div>
+
+    <!-- Command Output -->
+    <div id="command-output">
+        <span class="blink">$</span> <span id="command-text"></span>
+        <button class="copy-button" onclick="copyCommand()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateNiktoCommand() {
+    let command = 'nikto';
+    
+    // Target settings
+    const host = document.getElementById('host')?.value;
+    if (host) {
+        command += ` -h ${host}`;
+    }
+    
+    const port = document.getElementById('port')?.value;
+    if (port) {
+        command += ` -p ${port}`;
+    }
+    
+    // SSL options
+    if (document.getElementById('ssl')?.checked) command += ' -ssl';
+    if (document.getElementById('nossl')?.checked) command += ' -nossl';
+    
+    // Scan options
+    if (document.getElementById('dbcheck')?.checked) command += ' -dbcheck';
+    if (document.getElementById('followredirects')?.checked) command += ' -followredirects';
+    if (document.getElementById('nofollowredirects')?.checked) command += ' -nofollowredirects';
+    if (document.getElementById('nokeepalive')?.checked) command += ' -nokeepalive';
+    if (document.getElementById('nointeractive')?.checked) command += ' -nointeractive';
+    if (document.getElementById('cookies')?.checked) command += ' -cookies';
+    
+    // Authentication
+    const username = document.getElementById('username')?.value;
+    const password = document.getElementById('password')?.value;
+    if (username && password) {
+        if (document.getElementById('basic')?.checked) {
+            command += ` -id ${username}:${password}`;
+        }
+    }
+    
+    // Output options
+    const format = document.getElementById('format')?.value;
+    const output = document.getElementById('output')?.value;
+    if (format && output) {
+        command += ` -o ${output} -Format ${format}`;
+    }
+    
+    if (document.getElementById('verbose')?.checked) command += ' -verbose';
+    if (document.getElementById('debug')?.checked) command += ' -debug';
+    
+    // Tuning options
+    if (document.getElementById('evasion')?.checked) command += ' -evasion 1';
+    if (document.getElementById('mutate')?.checked) command += ' -mutate';
+    if (document.getElementById('timeout')?.checked) command += ' -timeout 30';
+    
+    // Update command display
+    const commandTextElement = document.getElementById('command-text');
+    if (commandTextElement) {
+        commandTextElement.textContent = command.trim();
+    }
+}
+
+function copyCommand() {
+    const commandText = document.getElementById('command-text')?.textContent || '';
+    navigator.clipboard.writeText(commandText).then(() => {
+        alert('Command copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert('Failed to copy command to clipboard');
+    });
+}
+
+// Generate initial command when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    generateNiktoCommand();
+});
+</script>
+</body></html>

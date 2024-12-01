@@ -1,0 +1,272 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+</style></head><body>
+<div class="container">
+    <h1>GR-GSM Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>GR-GSM Configuration</h2>
+            <div class="tool-description">GSM Signal Analysis and Capture Tool</div>
+        </div>
+        
+        <div class="tool-content active">
+            <!-- Basic Settings -->
+            <div class="option-group">
+                <h3>Basic Settings</h3>
+                <label>Sample Rate (Hz):</label>
+                <input type="text" id="samplerate" placeholder="2000000">
+                <label>Frequency (MHz):</label>
+                <input type="text" id="frequency" placeholder="935.2M">
+                <div class="checkbox-group">
+                    <div><input type="radio" name="operation" id="livemon" value="livemon" checked> Live Monitor</div>
+                    <div><input type="radio" name="operation" id="decode" value="decode"> Decode Capture</div>
+                </div>
+            </div>
+
+            <!-- Capture Options -->
+            <div class="option-group">
+                <h3>Capture Options</h3>
+                <label>Gain (dB):</label>
+                <input type="text" id="gain" placeholder="30">
+                <label>PPM Error:</label>
+                <input type="text" id="ppm" placeholder="0">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="channelize" value="--channelize"> Channelize</div>
+                    <div><input type="checkbox" id="cfile" value="--cfile"> Save to cfile</div>
+                </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="option-group">
+                <h3>Advanced Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="a5_1" value="--a5_1-sim"> A5/1 Simulation</div>
+                    <div><input type="checkbox" id="print_bursts" value="--print-bursts"> Print Bursts</div>
+                    <div><input type="checkbox" id="verbose" value="--verbose"> Verbose Output</div>
+                    <div><input type="checkbox" id="debug" value="--debug"> Debug Mode</div>
+                </div>
+            </div>
+
+            <!-- Device Settings -->
+            <div class="option-group">
+                <h3>Device Settings</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="rtlsdr" value="--rtlsdr"> RTL-SDR Device</div>
+                    <div><input type="checkbox" id="hackrf" value="--hackrf"> HackRF Device</div>
+                    <div><input type="checkbox" id="usrp" value="--usrp"> USRP Device</div>
+                </div>
+            </div>
+
+            <button onclick="generateGRGSMCommand()" class="generate-button">Generate Command</button>
+        </div>
+    </div>
+
+    <!-- Command Output -->
+    <div id="command-output">
+        <span class="blink">$</span> <span id="command-text"></span>
+        <button class="copy-button" onclick="copyCommand()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateGRGSMCommand() {
+    let command = '';
+    const operation = document.getElementById('livemon')?.checked ? 'grgsm_livemon' : 'grgsm_decode';
+    const samplerate = document.getElementById('samplerate')?.value || '2000000';
+    const frequency = document.getElementById('frequency')?.value || '935.2M';
+    const gain = document.getElementById('gain')?.value || '30';
+    const ppm = document.getElementById('ppm')?.value || '0';
+    
+    // Build base command
+    command = `${operation}`;
+    
+    // Add basic parameters
+    command += ` --samp-rate ${samplerate}`;
+    command += ` --fc ${frequency}`;
+    command += ` --gain ${gain}`;
+    
+    if (ppm) {
+        command += ` --ppm ${ppm}`;
+    }
+    
+    // Add device selection
+    if (document.getElementById('rtlsdr')?.checked) command += ' --rtlsdr';
+    if (document.getElementById('hackrf')?.checked) command += ' --hackrf';
+    if (document.getElementById('usrp')?.checked) command += ' --usrp';
+    
+    // Add options
+    if (document.getElementById('channelize')?.checked) command += ' --channelize';
+    if (document.getElementById('cfile')?.checked) command += ' --cfile capture.cfile';
+    if (document.getElementById('a5_1')?.checked) command += ' --a5_1-sim';
+    if (document.getElementById('print_bursts')?.checked) command += ' --print-bursts';
+    if (document.getElementById('verbose')?.checked) command += ' --verbose';
+    if (document.getElementById('debug')?.checked) command += ' --debug';
+    
+    // Update command display
+    const commandTextElement = document.getElementById('command-text');
+    if (commandTextElement) {
+        commandTextElement.textContent = command.trim();
+    }
+}
+
+function copyCommand() {
+    const commandText = document.getElementById('command-text')?.textContent || '';
+    navigator.clipboard.writeText(commandText).then(() => {
+        alert('Command copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert('Failed to copy command to clipboard');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateGRGSMCommand();
+});
+</script>
+</body></html>

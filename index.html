@@ -1,0 +1,436 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.tool-card {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+
+.tool-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #00ff00, #00aa00, #00ff00);
+    background-size: 200% 100%;
+    animation: borderFlow 2s linear infinite;
+}
+
+.tool-card h2 {
+    margin: 0 0 15px 0;
+    color: #00ff00;
+    font-size: 1.5em;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.tool-card p {
+    color: #88ff88;
+    margin-bottom: 20px;
+}
+
+.tool-link {
+    display: inline-block;
+    background-color: #004400;
+    color: #00ff00;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-link:hover {
+    background-color: #006600;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.header {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #00ff00;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.header h1 {
+    font-size: 2.8em;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.header p {
+    color: #88ff88;
+    font-size: 1.2em;
+    margin: 10px 0 0 0;
+}
+
+.author {
+    color: #00aa00;
+    font-size: 1em;
+    margin-top: 10px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+    }
+}
+
+@keyframes borderFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.terminal-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(100px);
+    }
+}
+
+.category-title {
+    grid-column: 1 / -1;
+    color: #00ff00;
+    border-bottom: 2px solid #00ff00;
+    padding-bottom: 10px;
+    margin: 30px 0;
+    font-size: 1.8em;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+}
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+.ascii-art {
+    white-space: pre-wrap;
+    font-family: monospace;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 90%;
+    overflow: hidden;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00, 0 0 20px #00ff00;
+    }
+    50% {
+        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+    }
+    100% {
+        text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00, 0 0 20px #00ff00;
+    }
+}
+</style></head><body>
+<div class="terminal-effect"></div>
+<canvas class="matrix-bg" id="matrixCanvas"></canvas>
+
+<div class="header">
+    <div class="ascii-art">
+        <pre>
+
+
+                                        ^d@@@@@@@@@@@@@@@@@Dr                                       
+                                 *#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@B!                                
+                             Q@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8                            
+                         P@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}                        
+                      H@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@L                     
+                   =@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#                   
+                 d@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                
+               6@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=              
+             Y@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@             
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@$           
+          t@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          
+         #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@~        
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@z       
+       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@m      
+      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|     
+     #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#=         ^@@@@@@@@@@@@@@     
+    }@@@@@@@@@@@@@8t}tB@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#                n@@@@@@@@@@@@    
+    @@@@@@@@@@L           #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#     =#@@@@@@@@$    E@@@@@@@@@@z   
+   8@@@@@@@@v      __       #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     @@@@@@@@@@@@@@@@  _@@@@@@@@@@   
+   @@@@@@@@   #@@@@@@@@@@_   -@@@@@@@@@@@@@@@@@`@@@@@@@@@@@@@Q    @@@@@@@@@@@@@@@@@@@@n8@@@@@@@@@`  
+  `@@@@@@@gx@@@@@@@@@@@@@@@_   B@@@@@@@@@@@@@@D @@@@@@@@@@@@c   B@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#  
+  B@@@@@@@@@@@@@@@@@@@@@@@@@#   ?@@@@@@@@@L#@@  X@@8-@@@@@@=   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@@@: $@  .@#  @@@@@`  |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
+  @@@@@@@@@@d^.   =V#@@@@@@@@@-    L@@@@@@@  @   @  ~@@@@    `#@@@@@@@@@@@@@d             r@@@@@@@  
+  @@@@@@@@#zYYv=        -#@@@        }@@@@@  @   @   @@8        @@@@@@@@Q       :m#@@@@@#h_ Z@@@@@  
+  @@@@@@@@8^#@@@@@@@@6                  _~   @   @m              @@@@8     ~#@@@@@@@@@c  P@@@@@@@@  
+  c@@@@Y    h@@@@@@@@@@@@D                  @@   @@g             @n     P@@@@@@@@@@@@@8    W@@@@@@  
+   @@@n `   @@@@@8^         >         @@@=            B@             B@@@@@@@@@@@@@@@@@B    @@@@@r  
+   @@@@@.  @@W                          P@@E-      L@@@?         6@@@@@@@@@@@@@@@@@@@@@x  z@@@@@@   
+   _@@@@.                            Y@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#_    @@@@@@6   
+    @@@@@,     D@@@#                      L#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#X`       w@@@@@@@    
+     @@@@@@@   @@@@@8    ndn.                     ,LHg#@@@@@@@#B6hY>.              =   ?@@@@@@@     
+     >@@@@@@d  @@@@@  c@@@@@@@,   m@@@@@@@@:                                 L@@@} 8   @@@@@@@X     
+      z@@@@@@   @@@  @@@@@@@@@  x@@@@@@@@@@@@z      w@@@@@@@@@V     W@@@@@$  @@@@@    r@@@@@@8      
+       w@@@@@8   *d  @@@@@@@@  _@@@@@@@@@@@@@@    6@@@@@@@@@@@@@8  r@@@@@@@  @@@@@    @@@@@@z       
+        |@@@@@z      #@@@@@@@  @@@@@@@@@@@@@@@X   @@@@@@@@@@@@@@@  z@@@@@@@  V@@Q    Q@@@@@?        
+          @@@@@h      !@@@@@@  #@@@@@@@@@@@@@@#  V@@@@@@@@@@@@@@@  B@@@@@@@   ~     @@@@@@          
+           #@@@@B         _r,  `@@@@@@@@@@@@@@g  t@@@@@@@@@@@@@@@  @@@@@@6        r@@@@@#           
+            !@@@@@    #?        ~@@@@@@@@@@@@@   ?@@@@@@@@@@@@@@   6Ex      6_   @@@@@@,            
+              Z@@@@#    8 .@@@W       `rmB@@#     #@@@@@@@@@@@D          gD    Q@@@@@h              
+                8@@@@#     .@@@* ##dv_                          d@@@@@       #@@@@@P                
+                  Z@@@@@V         @@@@@@@@@@@@   @@@@@@@@@@@@@  @@@Q      m@@@@@@z                  
+                    `@@@@@@E        *8@@@@@@@@   @@@@@@@@@@@m          Q@@@@@@#                     
+                       r@@@@@@@#>                                 r#@@@@@@@@.                       
+                           B@@@@@@@@@@8n=                 ,}8@@@@@@@@@@@W                           
+                               d@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@L                               
+                                    ,W@@@@@@@@@@@@@@@@@@@@@@@#w                                     
+                                                                                                    
+        </pre>
+    </div>
+    <h1>Commander</h1>
+    <p>Command generator for comprehensive collection of specialized security testing tools and generators</p>
+    <div class="author">by D8RH8R 2024</div>
+</div>
+
+<div class="container">
+    <div class="grid">
+        <h3 class="category-title">Network Analysis Tools</h3>
+        
+        <div class="tool-card">
+            <h2>Nmap Generator</h2>
+            <p>Advanced network scanning and enumeration command generator.</p>
+            <a href="nmap_gen.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Responder</h2>
+            <p>LLMNR/NBT-NS/mDNS poisoner and NTLMv1/2 relay.</p>
+            <a href="Responder.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <h3 class="category-title">Web Application Tools</h3>
+
+        <div class="tool-card">
+            <h2>SQLMap</h2>
+            <p>Automated SQL injection and database takeover tool.</p>
+            <a href="sqlmap.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Nikto</h2>
+            <p>Web server vulnerability scanner and analyzer.</p>
+            <a href="Nikto.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Dalfox</h2>
+            <p>Parameter analyzer and XSS scanning tool.</p>
+            <a href="dalfox.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <h3 class="category-title">Password and Hash Tools</h3>
+
+        <div class="tool-card">
+            <h2>John The Ripper</h2>
+            <p>Advanced password cracker and hash breaker.</p>
+            <a href="john.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Hashcat</h2>
+            <p>High-performance password recovery tool.</p>
+            <a href="Hashcat.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <h3 class="category-title">Wireless Tools</h3>
+
+        <div class="tool-card">
+            <h2>Aircrack-ng</h2>
+            <p>Complete suite for wireless network security assessment.</p>
+            <a href="aircrack.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>GR-GSM</h2>
+            <p>GSM scanning and analysis toolkit.</p>
+            <a href="gr-gsm.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Airmon</h2>
+            <p>Wireless interface management tool.</p>
+            <a href="airmon.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Kalibrate</h2>
+            <p>GSM signal scanner and analyzer.</p>
+            <a href="kalibrate.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <h3 class="category-title">Reconnaissance Tools</h3>
+
+        <div class="tool-card">
+            <h2>Recon Script</h2>
+            <p>Automated reconnaissance and information gathering suite.</p>
+            <a href="recon.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <h3 class="category-title">System Tools</h3>
+
+        <div class="tool-card">
+            <h2>Windows 10 Enumeration</h2>
+            <p>PowerShell commands for Windows system enumeration.</p>
+            <a href="windows10.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Linux Enumeration</h2>
+            <p>Bash commands for Linux system enumeration.</p>
+            <a href="linux.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>SSH & Socat</h2>
+            <p>Connection handling and pivoting utilities.</p>
+            <a href="ssh-socat.html" class="tool-link">Launch Tool</a>
+        </div>
+
+        <div class="tool-card">
+            <h2>Kerbrute</h2>
+            <p>Kerberos bruteforcing and enumeration utility.</p>
+            <a href="kerbrute.html" class="tool-link">Launch Tool</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Matrix rain effect
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = "01";
+const fontSize = 14;
+const columns = canvas.width/fontSize;
+const drops = [];
+
+for(let x = 0; x < columns; x++) {
+    drops[x] = 1;
+}
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#0F0';
+    ctx.font = fontSize + 'px monospace';
+
+    for(let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
+            drops[i] = 0;
+        
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 50);
+
+// Card hover effects
+document.querySelectorAll('.tool-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        card.style.setProperty('--x', `${x}px`);
+        card.style.setProperty('--y', `${y}px`);
+    });
+});
+
+// Resize handler for matrix effect
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+</body></html>

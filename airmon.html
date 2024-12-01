@@ -1,0 +1,276 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+</style></head><body>
+<div class="container">
+    <h1>Airmon-ng Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Airmon-ng Configuration</h2>
+            <div class="tool-description">Wireless Interface Management Tool</div>
+        </div>
+        
+        <div class="tool-content active">
+            <!-- Interface Selection -->
+            <div class="option-group">
+                <h3>Interface Selection</h3>
+                <label>Wireless Interface:</label>
+                <input type="text" id="interface" placeholder="wlan0">
+            </div>
+
+            <!-- Operation Mode -->
+            <div class="option-group">
+                <h3>Operation Mode</h3>
+                <div class="checkbox-group">
+                    <div><input type="radio" name="operation" id="start" value="start" checked> Start monitor mode</div>
+                    <div><input type="radio" name="operation" id="stop" value="stop"> Stop monitor mode</div>
+                    <div><input type="radio" name="operation" id="check" value="check"> Check running processes</div>
+                </div>
+            </div>
+
+            <!-- Channel Configuration -->
+            <div class="option-group">
+                <h3>Channel Configuration</h3>
+                <label>Channel (optional):</label>
+                <input type="text" id="channel" placeholder="1-14">
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="band-2ghz" value="--band a"> 2.4 GHz band</div>
+                    <div><input type="checkbox" id="band-5ghz" value="--band g"> 5 GHz band</div>
+                </div>
+            </div>
+
+            <!-- Additional Options -->
+            <div class="option-group">
+                <h3>Additional Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="kill" value="kill"> Kill interfering processes</div>
+                    <div><input type="checkbox" id="list" value="list"> List wireless interfaces</div>
+                    <div><input type="checkbox" id="debug" value="--debug"> Debug mode</div>
+                    <div><input type="checkbox" id="verbose" value="--verbose"> Verbose output</div>
+                </div>
+            </div>
+
+            <button onclick="generateAirmonCommand()" class="generate-button">Generate Command</button>
+        </div>
+    </div>
+
+    <!-- Command Output -->
+    <div id="command-output">
+        <span class="blink">$</span> <span id="command-text"></span>
+        <button class="copy-button" onclick="copyCommand()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateAirmonCommand() {
+    const interface = document.getElementById('interface')?.value || '';
+    const channel = document.getElementById('channel')?.value || '';
+    let operation = '';
+    let options = [];
+    
+    // Get operation mode
+    if (document.getElementById('start')?.checked) operation = 'start';
+    if (document.getElementById('stop')?.checked) operation = 'stop';
+    if (document.getElementById('check')?.checked) operation = 'check';
+    
+    // Build command base
+    let command = 'airmon-ng';
+    
+    // Add kill option if selected (needs to be separate command)
+    if (document.getElementById('kill')?.checked) {
+        command = 'airmon-ng kill && ' + command;
+    }
+    
+    // Add list option
+    if (document.getElementById('list')?.checked) {
+        command += ' list';
+        
+    } else {
+        // Add operation and interface
+        if (operation && interface) {
+            command += ` ${operation} ${interface}`;
+            
+            // Add channel if provided and in start mode
+            if (channel && operation === 'start') {
+                command += ` ${channel}`;
+            }
+        }
+    }
+    
+    // Add additional options
+    if (document.getElementById('debug')?.checked) options.push('--debug');
+    if (document.getElementById('verbose')?.checked) options.push('--verbose');
+    if (document.getElementById('band-2ghz')?.checked) options.push('--band a');
+    if (document.getElementById('band-5ghz')?.checked) options.push('--band g');
+    
+    if (options.length > 0) {
+        command += ' ' + options.join(' ');
+    }
+    
+    // Update command display
+    const commandTextElement = document.getElementById('command-text');
+    if (commandTextElement) {
+        commandTextElement.textContent = command.trim();
+    }
+}
+
+function copyCommand() {
+    const commandText = document.getElementById('command-text')?.textContent || '';
+    navigator.clipboard.writeText(commandText).then(() => {
+        alert('Command copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert('Failed to copy command to clipboard');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateAirmonCommand();
+});
+</script>
+</body></html>

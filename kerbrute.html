@@ -1,0 +1,265 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+input[type="text"], input[type="number"] {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 3px;
+    width: 150px;
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+</style></head><body>
+<div class="container">
+    <h1>Kerbrute Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Kerbrute Options</h2>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>Domain Settings</h3>
+                <div>
+                    <input type="text" id="domain" placeholder="Domain (e.g. domain.local)">
+                    <input type="text" id="dc-ip" placeholder="DC IP Address">
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Authentication</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="safe-mode"> Safe Mode (Less Noisy)</div>
+                    <div><input type="checkbox" id="verbose"> Verbose Output</div>
+                </div>
+                <input type="number" id="threads" placeholder="Threads" value="10">
+            </div>
+
+            <div class="option-group">
+                <h3>Attack Mode</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="user-enum"> User Enumeration</div>
+                    <div><input type="checkbox" id="password-spray"> Password Spray</div>
+                    <div><input type="checkbox" id="bruteforce"> Username/Password Bruteforce</div>
+                    <div><input type="checkbox" id="user-as-pass"> Username as Password</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Wordlist Options</h3>
+                <input type="text" id="userlist" placeholder="Users Wordlist Path">
+                <input type="text" id="passlist" placeholder="Passwords Wordlist Path">
+            </div>
+
+            <div class="option-group">
+                <h3>Output Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="output-file"> Save Output to File</div>
+                </div>
+                <input type="text" id="output-path" placeholder="Output File Path">
+            </div>
+
+            <button onclick="generateCommands()" class="generate-button">Generate Kerbrute Commands</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">$</span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateCommands() {
+    let commands = [];
+    
+    const domain = document.getElementById('domain').value || 'domain.local';
+    const dcIP = document.getElementById('dc-ip').value || '10.10.10.10';
+    const threads = document.getElementById('threads').value || '10';
+    const userlist = document.getElementById('userlist').value || 'users.txt';
+    const passlist = document.getElementById('passlist').value || 'passwords.txt';
+    const outputPath = document.getElementById('output-path').value || 'kerbrute_output.txt';
+    
+    let baseCommand = `./kerbrute`;
+    
+    if (document.getElementById('safe-mode').checked) {
+        baseCommand += ' --safe';
+    }
+    
+    if (document.getElementById('verbose').checked) {
+        baseCommand += ' -v';
+    }
+    
+    baseCommand += ` --dc ${dcIP} -d ${domain} --threads ${threads}`;
+    
+    if (document.getElementById('output-file').checked) {
+        baseCommand += ` -o ${outputPath}`;
+    }
+
+    commands.push('# Download Kerbrute\n' +
+        'wget https://github.com/ropnop/kerbrute/releases/latest/download/kerbrute_linux_amd64\n' +
+        'chmod +x kerbrute_linux_amd64\n' +
+        'mv kerbrute_linux_amd64 kerbrute\n');
+
+    if (document.getElementById('user-enum').checked) {
+        commands.push('# User Enumeration\n' +
+            `${baseCommand} userenum --users ${userlist}`);
+    }
+
+    if (document.getElementById('password-spray').checked) {
+        commands.push('# Password Spray\n' +
+            `${baseCommand} passwordspray --users ${userlist} -p "Summer2023!"`);
+    }
+
+    if (document.getElementById('bruteforce').checked) {
+        commands.push('# Bruteforce\n' +
+            `${baseCommand} bruteforce --users ${userlist} --passwords ${passlist}`);
+    }
+
+    if (document.getElementById('user-as-pass').checked) {
+        commands.push('# Username as Password\n' +
+            `${baseCommand} userpasswd --users ${userlist}`);
+    }
+
+    commands.push('# Quick Reference:\n' +
+        '# Common Username Patterns:\n' +
+        'john.doe\n' +
+        'jdoe\n' +
+        'johnd\n' +
+        'doe.john\n' +
+        'doej\n\n' +
+        '# Common Password Patterns:\n' +
+        'Company123!\n' +
+        'Season2023!\n' +
+        'Password123!\n' +
+        'Changeme123!');
+
+    const scriptElement = document.getElementById('script-content');
+    scriptElement.textContent = commands.join('\n\n');
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content').textContent;
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Commands copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy commands:', err);
+        alert('Failed to copy commands to clipboard');
+    });
+}
+
+// Generate initial commands when page loads
+document.addEventListener('DOMContentLoaded', generateCommands);
+</script>
+</body></html>

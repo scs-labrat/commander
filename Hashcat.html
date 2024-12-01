@@ -1,0 +1,291 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+
+</style></head><body>
+<div class="container">
+    <h1>Hashcat Command Generator</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Hashcat Configuration</h2>
+            <div class="tool-description">Advanced Password Recovery Tool</div>
+        </div>
+        
+        <div class="tool-content active">
+            <!-- Input Files -->
+            <div class="option-group">
+                <h3>Input Files</h3>
+                <label>Hash File:</label>
+                <input type="text" id="hashcat-hashfile" placeholder="path/to/hash.txt">
+                <label>Dictionary:</label>
+                <input type="text" id="hashcat-dictionary" placeholder="path/to/wordlist.txt">
+            </div>
+
+            <!-- Attack Mode -->
+            <div class="option-group">
+                <h3>Attack Mode</h3>
+                <select id="hashcat-attack-mode">
+                    <option value="0">Straight (0)</option>
+                    <option value="1">Combination (1)</option>
+                    <option value="3">Brute-Force (3)</option>
+                    <option value="6">Hybrid Dict + Mask (6)</option>
+                    <option value="7">Hybrid Mask + Dict (7)</option>
+                </select>
+            </div>
+
+            <!-- Hash Type -->
+            <div class="option-group">
+                <h3>Hash Type</h3>
+                <select id="hashcat-hash-type">
+                    <option value="0">MD5</option>
+                    <option value="100">SHA1</option>
+                    <option value="1000">NTLM</option>
+                    <option value="1800">sha512crypt $6$, SHA512 (Unix)</option>
+                    <option value="3200">bcrypt $2*$, Blowfish (Unix)</option>
+                    <option value="5500">NetNTLMv1</option>
+                    <option value="5600">NetNTLMv2</option>
+                    <option value="13100">Kerberos 5 TGS-REP</option>
+                </select>
+            </div>
+
+            <!-- Optimization Options -->
+            <div class="option-group">
+                <h3>Optimization</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="hashcat-force" value="--force"> Force execution</div>
+                    <div><input type="checkbox" id="hashcat-opencl" value="--opencl-device-types=1,2,3"> Use all OpenCL devices</div>
+                    <div><input type="checkbox" id="hashcat-optimized-kernel" value="-O"> Optimized kernel</div>
+                    <div><input type="checkbox" id="hashcat-workload-profile" value="-w 3"> High workload profile</div>
+                </div>
+            </div>
+
+            <!-- Rules and Masks -->
+            <div class="option-group">
+                <h3>Rules and Masks</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="hashcat-rule-best64" value="-r /usr/share/hashcat/rules/best64.rule"> Apply best64 rules</div>
+                    <div><input type="checkbox" id="hashcat-rule-toggles" value="-r /usr/share/hashcat/rules/toggles1.rule"> Apply toggles rules</div>
+                    <div><input type="checkbox" id="hashcat-increment" value="--increment"> Enable increment mode</div>
+                    <div><input type="checkbox" id="hashcat-increment-min" value="--increment-min=8"> Min length 8</div>
+                </div>
+            </div>
+
+            <!-- Output Options -->
+            <div class="option-group">
+                <h3>Output Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="hashcat-show" value="--show"> Show cracked hashes</div>
+                    <div><input type="checkbox" id="hashcat-potfile-disable" value="--potfile-disable"> Disable potfile</div>
+                    <div><input type="checkbox" id="hashcat-outfile" value="--outfile=cracked.txt"> Output to file</div>
+                    <div><input type="checkbox" id="hashcat-status" value="--status"> Enable status-screen</div>
+                </div>
+            </div>
+
+            <button onclick="generateHashcatCommand()" class="generate-button">Generate Command</button>
+        </div>
+    </div>
+
+    <!-- Command Output -->
+    <div id="command-output">
+        <span class="blink">$</span> <span id="command-text"></span>
+        <button class="copy-button" onclick="copyCommand()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateHashcatCommand() {
+    const components = {
+        hashFile: document.getElementById('hashcat-hashfile')?.value || '',
+        dictionary: document.getElementById('hashcat-dictionary')?.value || '',
+        attackMode: document.getElementById('hashcat-attack-mode')?.value || '0',
+        hashType: document.getElementById('hashcat-hash-type')?.value || '0'
+    };
+    
+    let options = [];
+    
+    // Add all checked options
+    const checkboxIds = [
+        'hashcat-force', 'hashcat-opencl', 'hashcat-optimized-kernel', 
+        'hashcat-workload-profile', 'hashcat-rule-best64', 'hashcat-rule-toggles',
+        'hashcat-increment', 'hashcat-increment-min', 'hashcat-show',
+        'hashcat-potfile-disable', 'hashcat-outfile', 'hashcat-status'
+    ];
+    
+    checkboxIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element && element.checked) {
+            options.push(element.value);
+        }
+    });
+    
+    // Construct final command
+    const command = `hashcat -m ${components.hashType} -a ${components.attackMode} ${options.join(' ')} ${components.hashFile} ${components.dictionary}`
+        .replace(/\s+/g, ' ')
+        .trim();
+    
+    const commandTextElement = document.getElementById('command-text');
+    if (commandTextElement) {
+        commandTextElement.textContent = command;
+    }
+}
+
+function copyCommand() {
+    const commandText = document.getElementById('command-text')?.textContent || '';
+    navigator.clipboard.writeText(commandText).then(() => {
+        alert('Command copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert('Failed to copy command to clipboard');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateHashcatCommand();
+});
+</script>
+</body></html>

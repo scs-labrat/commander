@@ -1,0 +1,349 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select, input[type="number"] {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.sub-option {
+    margin-left: 20px;
+    padding: 10px;
+    border-left: 1px solid #00ff00;
+    margin-top: 5px;
+    display: none;
+}
+
+.sub-option.visible {
+    display: block;
+}
+</style></head><body>
+<div class="container">
+    <h1>Advanced Dalfox XSS Scanner Configuration</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>Dalfox Settings</h2>
+            <div class="tool-description">Configure detailed Dalfox XSS scanning parameters and options</div>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>Target Settings</h3>
+                <label>Single URL (optional):</label>
+                <input type="text" id="target-url" placeholder="https://example.com">
+                <label>Input File (optional):</label>
+                <input type="text" id="input-file" placeholder="targets.txt">
+                <label>Output File:</label>
+                <input type="text" id="output-file" placeholder="dalfox_results.txt">
+            </div>
+
+            <div class="option-group">
+                <h3>Basic Scan Options</h3>
+                <div class="checkbox-group">
+                    <div>
+                        <input type="checkbox" id="use-blind" onchange="toggleSubOption('blind-settings')"> Use Blind XSS
+                        <div id="blind-settings" class="sub-option">
+                            <input type="text" id="blind-url" placeholder="Your callback URL">
+                        </div>
+                    </div>
+                    <div><input type="checkbox" id="use-mining"> Parameter Mining</div>
+                    <div><input type="checkbox" id="use-deep"> Deep Scan</div>
+                    <div><input type="checkbox" id="skip-bav"> Skip BAV</div>
+                    <div><input type="checkbox" id="follow-redirects"> Follow Redirects</div>
+                    <div><input type="checkbox" id="use-multicast"> Use Multicast Mode</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Advanced Scan Settings</h3>
+                <div class="checkbox-group">
+                    <div>
+                        <input type="checkbox" id="use-timeout" onchange="toggleSubOption('timeout-settings')"> Custom Timeout
+                        <div id="timeout-settings" class="sub-option">
+                            <input type="number" id="timeout-value" placeholder="Timeout in seconds" min="1" value="10">
+                        </div>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="use-delay" onchange="toggleSubOption('delay-settings')"> Request Delay
+                        <div id="delay-settings" class="sub-option">
+                            <input type="number" id="delay-value" placeholder="Delay in seconds" min="0" step="0.1" value="0.1">
+                        </div>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="custom-header" onchange="toggleSubOption('header-settings')"> Custom Headers
+                        <div id="header-settings" class="sub-option">
+                            <input type="text" id="header-value" placeholder="Header:Value">
+                        </div>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="custom-payload" onchange="toggleSubOption('payload-settings')"> Custom Payloads
+                        <div id="payload-settings" class="sub-option">
+                            <input type="text" id="payload-file" placeholder="custom-payloads.txt">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Output Options</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="no-color"> No Color Output</div>
+                    <div><input type="checkbox" id="silence-mode"> Silence Mode</div>
+                    <div><input type="checkbox" id="format-json"> JSON Output</div>
+                    <div><input type="checkbox" id="only-poc"> Only POC</div>
+                    <div><input type="checkbox" id="debug-mode"> Debug Mode</div>
+                </div>
+            </div>
+
+            <button onclick="generateScript()" class="generate-button">Generate Script</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">$</span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function toggleSubOption(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.toggle('visible');
+    }
+}
+
+function generateScript() {
+    const targetUrl = document.getElementById('target-url').value;
+    const inputFile = document.getElementById('input-file').value;
+    const outputFile = document.getElementById('output-file').value || 'dalfox_results.txt';
+    
+    let script = `#!/bin/bash
+
+# Advanced Dalfox XSS Scanner Script
+output_file="${outputFile}"
+date_str=$(date +%Y%m%d_%H%M%S)
+
+echo "[+] Starting Advanced Dalfox XSS Scanner..."
+
+# Base command with advanced options
+dalfox_cmd="dalfox `;
+
+    // Basic Options
+    if (document.getElementById('silence-mode').checked) script += '--silence ';
+    if (document.getElementById('no-color').checked) script += '--no-color ';
+    if (document.getElementById('use-blind').checked && document.getElementById('blind-url').value) {
+        script += `--blind "${document.getElementById('blind-url').value}" `;
+    }
+    if (document.getElementById('use-mining').checked) script += '--mining-dict ';
+    if (document.getElementById('use-deep').checked) script += '--deep-scan ';
+    if (document.getElementById('skip-bav').checked) script += '--skip-bav ';
+    if (document.getElementById('follow-redirects').checked) script += '--follow-redirects ';
+    if (document.getElementById('use-multicast').checked) script += '--multicast ';
+
+    // Advanced Options
+    if (document.getElementById('use-timeout').checked && document.getElementById('timeout-value').value) {
+        script += `--timeout ${document.getElementById('timeout-value').value} `;
+    }
+    if (document.getElementById('use-delay').checked && document.getElementById('delay-value').value) {
+        script += `--delay ${document.getElementById('delay-value').value} `;
+    }
+    if (document.getElementById('custom-header').checked && document.getElementById('header-value').value) {
+        script += `--header "${document.getElementById('header-value').value}" `;
+    }
+    if (document.getElementById('custom-payload').checked && document.getElementById('payload-file').value) {
+        script += `--custom-payload ${document.getElementById('payload-file').value} `;
+    }
+
+    // Output Options
+    if (document.getElementById('format-json').checked) script += '--format json ';
+    if (document.getElementById('only-poc').checked) script += '--only-poc ';
+    if (document.getElementById('debug-mode').checked) script += '--debug ';
+
+    script += `-o "$output_file"`;
+
+    // Target Mode Selection
+    if (targetUrl && inputFile) {
+        script += `
+
+# Running both single target and file input modes
+echo "[+] Scanning single target and targets from file..."
+$dalfox_cmd -u "${targetUrl}"
+cat "${inputFile}" | $dalfox_cmd pipe`;
+    } else if (targetUrl) {
+        script += `
+
+# Running single target mode
+echo "[+] Scanning single target..."
+$dalfox_cmd -u "${targetUrl}"`;
+    } else if (inputFile) {
+        script += `
+
+# Running file input mode
+echo "[+] Scanning targets from file..."
+cat "${inputFile}" | $dalfox_cmd pipe`;
+    }
+
+    script += `
+
+# Create backup of results
+cp "$output_file" "$output_file.$date_str.backup"
+
+echo "[+] Scan completed! Results saved to $output_file"
+echo "[+] Backup saved to $output_file.$date_str.backup"`;
+
+    const scriptElement = document.getElementById('script-content');
+    if (scriptElement) {
+        scriptElement.textContent = script;
+    }
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content')?.textContent || '';
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Script copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy script:', err);
+        alert('Failed to copy script to clipboard');
+    });
+}
+
+// Generate initial script when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    generateScript();
+});
+</script>
+</body></html>

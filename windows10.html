@@ -1,0 +1,350 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-section {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tool-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px dashed #00ff00;
+}
+
+.tool-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.tool-content {
+    display: block !important;
+    padding: 20px;
+}
+
+.option-group {
+    background-color: #222;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+}
+
+.option-group h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.generate-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #004400;
+    transition: all 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #006600;
+    transform: scale(1.02);
+}
+
+#command-output {
+    background-color: #000;
+    padding: 20px;
+    border: 1px solid #00ff00;
+    margin-top: 20px;
+    min-height: 50px;
+    border-radius: 5px;
+    position: relative;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tool-description {
+    font-size: 1.1em;
+    margin: 10px 0 20px 0;
+}
+
+input[type="text"], select, input[type="number"] {
+    background-color: #333;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 3px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.sub-option {
+    margin-left: 20px;
+    padding: 10px;
+    border-left: 1px solid #00ff00;
+    margin-top: 5px;
+    display: none;
+}
+
+.sub-option.visible {
+    display: block;
+}
+
+h1 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.category-label {
+    color: #00ff00;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.command-description {
+    color: #888;
+    font-size: 0.9em;
+    margin: 5px 0 15px 0;
+    font-style: italic;
+}
+</style></head><body>
+<div class="container">
+    <h1>Windows 10 PowerShell Enumeration & Privilege Escalation</h1>
+    
+    <div class="tool-section">
+        <div class="tool-header">
+            <h2>PowerShell Commands Generator</h2>
+            <div class="tool-description">Collection of powerful PowerShell commands for system enumeration and privilege escalation</div>
+        </div>
+        
+        <div class="tool-content">
+            <div class="option-group">
+                <h3>System Information</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="basic-sysinfo"> Basic System Info</div>
+                    <div><input type="checkbox" id="installed-software"> Installed Software</div>
+                    <div><input type="checkbox" id="running-processes"> Running Processes</div>
+                    <div><input type="checkbox" id="network-info"> Network Configuration</div>
+                    <div><input type="checkbox" id="scheduled-tasks"> Scheduled Tasks</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>User & Permission Analysis</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="current-privs"> Current User Privileges</div>
+                    <div><input type="checkbox" id="user-groups"> User Groups</div>
+                    <div><input type="checkbox" id="admin-users"> Administrator Accounts</div>
+                    <div><input type="checkbox" id="logon-sessions"> Logon Sessions</div>
+                    <div><input type="checkbox" id="token-privs"> Token Privileges</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>Service & Driver Enumeration</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="running-services"> Running Services</div>
+                    <div><input type="checkbox" id="service-perms"> Service Permissions</div>
+                    <div><input type="checkbox" id="drivers"> Loaded Drivers</div>
+                    <div><input type="checkbox" id="startup-apps"> Startup Applications</div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h3>File System Analysis</h3>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" id="writable-dirs"> Writable Directories</div>
+                    <div><input type="checkbox" id="unquoted-paths"> Unquoted Service Paths</div>
+                    <div><input type="checkbox" id="powershell-history"> PowerShell History</div>
+                    <div><input type="checkbox" id="sensitive-files"> Sensitive Files</div>
+                </div>
+            </div>
+
+            <button onclick="generateCommands()" class="generate-button">Generate PowerShell Commands</button>
+        </div>
+    </div>
+
+    <div id="command-output">
+        <span class="blink">PS></span> <span id="script-content"></span>
+        <button class="copy-button" onclick="copyScript()">Copy</button>
+    </div>
+</div>
+
+<script>
+function generateCommands() {
+    let commands = [];
+    
+    // System Information Commands
+    if (document.getElementById('basic-sysinfo').checked) {
+        commands.push('# Basic System Information\n' +
+            'Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer\n' +
+            'Get-WmiObject Win32_OperatingSystem | Select-Object Caption, Version, ServicePackMajorVersion, OSArchitecture, CSName');
+    }
+    
+    if (document.getElementById('installed-software').checked) {
+        commands.push('# Installed Software\n' +
+            'Get-ItemProperty HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName, DisplayVersion, InstallDate\n' +
+            'Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName, DisplayVersion, InstallDate');
+    }
+
+    if (document.getElementById('running-processes').checked) {
+        commands.push('# Running Processes\n' +
+            'Get-Process | Select-Object ProcessName, Id, Path | Sort-Object ProcessName\n' +
+            'Get-WmiObject Win32_Process | Select-Object Name, ProcessId, CommandLine');
+    }
+
+    if (document.getElementById('network-info').checked) {
+        commands.push('# Network Configuration\n' +
+            'Get-NetIPConfiguration -Detailed\n' +
+            'Get-NetTCPConnection -State Listen\n' +
+            'Get-DnsClientServerAddress');
+    }
+
+    if (document.getElementById('scheduled-tasks').checked) {
+        commands.push('# Scheduled Tasks\n' +
+            'Get-ScheduledTask | Where-Object {$_.State -ne "Disabled"} | Select-Object TaskName, TaskPath, State');
+    }
+
+    // User & Permission Commands
+    if (document.getElementById('current-privs').checked) {
+        commands.push('# Current User Privileges\n' +
+            'whoami /all\n' +
+            'Get-LocalUser | Select-Object Name, Enabled, LastLogon');
+    }
+
+    if (document.getElementById('user-groups').checked) {
+        commands.push('# User Groups\n' +
+            'Get-LocalGroup | Select-Object Name, Description\n' +
+            'Get-LocalGroupMember Administrators');
+    }
+
+    if (document.getElementById('admin-users').checked) {
+        commands.push('# Administrator Accounts\n' +
+            'Get-LocalGroupMember "Administrators"\n' +
+            'Get-WmiObject Win32_UserAccount | Where-Object {$_.Disabled -eq $False} | Select-Object Name, FullName, Disabled');
+    }
+
+    if (document.getElementById('logon-sessions').checked) {
+        commands.push('# Logon Sessions\n' +
+            'query user\n' +
+            'Get-WmiObject Win32_LoggedOnUser');
+    }
+
+    // Service Commands
+    if (document.getElementById('running-services').checked) {
+        commands.push('# Running Services\n' +
+            'Get-Service | Where-Object {$_.Status -eq "Running"} | Select-Object Name, DisplayName, StartType\n' +
+            'Get-WmiObject Win32_Service | Where-Object {$_.State -eq "Running"} | Select-Object Name, PathName, StartMode');
+    }
+
+    if (document.getElementById('service-perms').checked) {
+        commands.push('# Service Permissions\n' +
+            '$services = Get-WmiObject Win32_Service | Where-Object {$_.State -eq "Running"}\n' +
+            'foreach ($service in $services) {\n' +
+            '    $path = $service.PathName.Split("`" -")[0].Replace("`"","")\n' +
+            '    Get-Acl $path | Select-Object Path, Owner, AccessToString\n' +
+            '}');
+    }
+
+    if (document.getElementById('unquoted-paths').checked) {
+        commands.push('# Unquoted Service Paths\n' +
+            'Get-WmiObject Win32_Service | Where-Object {$_.PathName -notlike "`"*`" -and $_.PathName -like "* *"} | Select-Object Name, PathName, StartMode');
+    }
+
+    // File System Commands
+    if (document.getElementById('writable-dirs').checked) {
+        commands.push('# Writable Directories\n' +
+            '$paths = @("C:\\", "C:\\Program Files", "C:\\Program Files (x86)", "C:\\Windows")\n' +
+            'foreach ($path in $paths) {\n' +
+            '    Get-ChildItem $path -Recurse 2>$null | Where-Object {$_.PSIsContainer -and (Get-Acl $_.FullName).AccessToString -match "Everyone.*\\\\sModify|BUILTIN\\\\\\\\Users.*\\\\sModify"}\n' +
+            '}');
+    }
+
+    if (document.getElementById('sensitive-files').checked) {
+        commands.push('# Sensitive Files Search\n' +
+            'Get-ChildItem -Path C:\\ -Include *.config,*.conf,*.cfg,*.ini,*.xml,*.txt,*.log -File -Recurse 2>$null\n' +
+            'Get-ChildItem -Path C:\\Users -Include *.kdbx,*.key,*.keypem,*.rdp,*.ppk -File -Recurse 2>$null');
+    }
+
+    const scriptElement = document.getElementById('script-content');
+    if (scriptElement) {
+        scriptElement.textContent = commands.join('\n\n');
+    }
+}
+
+function copyScript() {
+    const scriptContent = document.getElementById('script-content')?.textContent || '';
+    navigator.clipboard.writeText(scriptContent).then(() => {
+        alert('Commands copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy commands:', err);
+        alert('Failed to copy commands to clipboard');
+    });
+}
+
+// Generate initial commands when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    generateCommands();
+});
+</script>
+</body></html>
