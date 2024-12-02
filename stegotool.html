@@ -1,45 +1,54 @@
-<html><head><base href="./"><meta charset="utf-8">
+<html>
+<head>
+<base href="./">
+<meta charset="utf-8">
 <title>Steganography Tool</title>
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: #1a1a1a;
-        color: #fff;
-        max-width: 800px;
-        margin: 0 auto;
+        font-family: 'Courier New', monospace;
+        background-color: #1a1a1a;
+        color: #00ff00;
         padding: 20px;
     }
 
     .container {
-        background: #2a2a2a;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
-    h1 {
-        color: #00ff95;
-        text-align: center;
+    .tool-section {
+        background-color: #2a2a2a;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .tool-section:hover {
+        transform: translateX(5px);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
     }
 
     .tabs {
-        display: flex;
         margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
     }
 
     .tab {
+        background-color: #004400;
+        color: #00ff00;
+        border: 1px solid #00ff00;
         padding: 10px 20px;
-        background: #333;
-        border: none;
-        color: white;
         cursor: pointer;
-        margin-right: 5px;
-        border-radius: 4px;
+        transition: all 0.3s ease;
+        border-radius: 3px;
     }
 
     .tab.active {
-        background: #00ff95;
-        color: black;
+        background-color: #006600;
     }
 
     .section {
@@ -50,43 +59,50 @@
         display: block;
     }
 
-    textarea {
+    input[type="file"], textarea, button {
+        background-color: #333;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 8px;
+        margin: 5px 0;
+        border-radius: 3px;
         width: 100%;
-        height: 100px;
-        margin: 10px 0;
-        background: #333;
-        color: white;
-        border: 1px solid #00ff95;
-        padding: 10px;
-        border-radius: 4px;
     }
 
     button {
-        background: #00ff95;
-        color: black;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
         cursor: pointer;
-        margin: 10px 0;
+        transition: all 0.3s ease;
     }
 
     button:hover {
-        background: #00cc76;
+        background-color: #006600;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
     }
 
-    canvas {
-        max-width: 100%;
-        margin: 10px 0;
-        border: 1px solid #00ff95;
-        border-radius: 4px;
-    }
-
-    #output {
+    #command-output {
+        background-color: #000;
+        padding: 20px;
+        border: 1px solid #00ff00;
         margin-top: 20px;
-        padding: 10px;
-        background: #333;
-        border-radius: 4px;
+        min-height: 50px;
+        border-radius: 5px;
+        position: relative;
+        white-space: pre-wrap;
+        font-family: monospace;
+    }
+
+    .copy-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .blink {
+        animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
     }
 </style>
 </head>
@@ -94,26 +110,28 @@
     <div class="container">
         <h1>🔐 Steganography Tool</h1>
         
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('encode')">Encode Message</button>
-            <button class="tab" onclick="switchTab('decode')">Decode Message</button>
-        </div>
+        <div class="tool-section">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('encode')">Encode Message</button>
+                <button class="tab" onclick="switchTab('decode')">Decode Message</button>
+            </div>
 
-        <div id="encode" class="section active">
-            <h2>Hide Message in Image</h2>
-            <input type="file" id="imageInput" accept="image/*">
-            <textarea id="message" placeholder="Enter your secret message here..."></textarea>
-            <button onclick="encodeMessage()">Hide Message</button>
-            <canvas id="originalCanvas"></canvas>
-            <canvas id="encodedCanvas"></canvas>
-            <button id="downloadBtn" style="display:none" onclick="downloadImage()">Download Encoded Image</button>
-        </div>
+            <div id="encode" class="section active">
+                <h2>Hide Message in Image</h2>
+                <input type="file" id="imageInput" accept="image/*">
+                <textarea id="message" placeholder="Enter your secret message here..."></textarea>
+                <button onclick="encodeMessage()">Hide Message</button>
+                <canvas id="originalCanvas"></canvas>
+                <canvas id="encodedCanvas"></canvas>
+                <button id="downloadBtn" style="display:none" onclick="downloadImage()">Download Encoded Image</button>
+            </div>
 
-        <div id="decode" class="section">
-            <h2>Extract Hidden Message</h2>
-            <input type="file" id="decodeInput" accept="image/*">
-            <button onclick="decodeMessage()">Extract Message</button>
-            <div id="output"></div>
+            <div id="decode" class="section">
+                <h2>Extract Hidden Message</h2>
+                <input type="file" id="decodeInput" accept="image/*">
+                <button onclick="decodeMessage()">Extract Message</button>
+                <div id="output"></div>
+            </div>
         </div>
     </div>
 
@@ -125,6 +143,7 @@ function switchTab(tab) {
     document.querySelector(`.tab[onclick*="${tab}"]`).classList.add('active');
     document.getElementById(tab).classList.add('active');
 }
+
 
 let originalImage = null;
 let encodedImage = null;
