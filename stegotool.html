@@ -1,0 +1,250 @@
+<html><head><base href="./"><meta charset="utf-8">
+<title>Steganography Tool</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #1a1a1a;
+        color: #fff;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .container {
+        background: #2a2a2a;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+        color: #00ff95;
+        text-align: center;
+    }
+
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        background: #333;
+        border: none;
+        color: white;
+        cursor: pointer;
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+
+    .tab.active {
+        background: #00ff95;
+        color: black;
+    }
+
+    .section {
+        display: none;
+    }
+
+    .section.active {
+        display: block;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        margin: 10px 0;
+        background: #333;
+        color: white;
+        border: 1px solid #00ff95;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    button {
+        background: #00ff95;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px 0;
+    }
+
+    button:hover {
+        background: #00cc76;
+    }
+
+    canvas {
+        max-width: 100%;
+        margin: 10px 0;
+        border: 1px solid #00ff95;
+        border-radius: 4px;
+    }
+
+    #output {
+        margin-top: 20px;
+        padding: 10px;
+        background: #333;
+        border-radius: 4px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Steganography Tool</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('encode')">Encode Message</button>
+            <button class="tab" onclick="switchTab('decode')">Decode Message</button>
+        </div>
+
+        <div id="encode" class="section active">
+            <h2>Hide Message in Image</h2>
+            <input type="file" id="imageInput" accept="image/*">
+            <textarea id="message" placeholder="Enter your secret message here..."></textarea>
+            <button onclick="encodeMessage()">Hide Message</button>
+            <canvas id="originalCanvas"></canvas>
+            <canvas id="encodedCanvas"></canvas>
+            <button id="downloadBtn" style="display:none" onclick="downloadImage()">Download Encoded Image</button>
+        </div>
+
+        <div id="decode" class="section">
+            <h2>Extract Hidden Message</h2>
+            <input type="file" id="decodeInput" accept="image/*">
+            <button onclick="decodeMessage()">Extract Message</button>
+            <div id="output"></div>
+        </div>
+    </div>
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    
+    document.querySelector(`.tab[onclick*="${tab}"]`).classList.add('active');
+    document.getElementById(tab).classList.add('active');
+}
+
+let originalImage = null;
+let encodedImage = null;
+
+// Handle image upload for encoding
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.getElementById('originalCanvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            originalImage = canvas;
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+function encodeMessage() {
+    if (!originalImage) {
+        alert('Please select an image first!');
+        return;
+    }
+
+    const message = document.getElementById('message').value;
+    if (!message) {
+        alert('Please enter a message to hide!');
+        return;
+    }
+
+    const canvas = document.getElementById('encodedCanvas');
+    canvas.width = originalImage.width;
+    canvas.height = originalImage.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(originalImage, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+
+    // Convert message to binary
+    const binary = message.split('').map(char => 
+        char.charCodeAt(0).toString(2).padStart(8, '0')
+    ).join('');
+
+    // Add message length at the beginning
+    const messageLengthBinary = message.length.toString(2).padStart(16, '0');
+    const fullBinary = messageLengthBinary + binary;
+
+    // Encode the message
+    for (let i = 0; i < fullBinary.length; i++) {
+        const bit = parseInt(fullBinary[i]);
+        pixels[i * 4] = (pixels[i * 4] & 254) | bit;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    encodedImage = canvas;
+    document.getElementById('downloadBtn').style.display = 'block';
+}
+
+function downloadImage() {
+    if (!encodedImage) return;
+    
+    const link = document.createElement('a');
+    link.download = 'encoded_image.png';
+    link.href = encodedImage.toDataURL();
+    link.click();
+}
+
+function decodeMessage() {
+    const fileInput = document.getElementById('decodeInput');
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('Please select an image to decode!');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+
+            // Extract message length (first 16 bits)
+            let messageLengthBinary = '';
+            for (let i = 0; i < 16; i++) {
+                messageLengthBinary += pixels[i * 4] & 1;
+            }
+            const messageLength = parseInt(messageLengthBinary, 2);
+
+            // Extract message
+            let binary = '';
+            for (let i = 16; i < 16 + (messageLength * 8); i++) {
+                binary += pixels[i * 4] & 1;
+            }
+
+            // Convert binary to text
+            let message = '';
+            for (let i = 0; i < binary.length; i += 8) {
+                const byte = binary.substr(i, 8);
+                message += String.fromCharCode(parseInt(byte, 2));
+            }
+
+            document.getElementById('output').innerText = message;
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+</body></html>

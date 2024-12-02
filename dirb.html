@@ -1,0 +1,355 @@
+<html><head><base href="." /><style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.title {
+    text-align: center;
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    margin-bottom: 30px;
+}
+
+.command-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: rgba(0, 20, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid #00ff00;
+}
+
+.command-title {
+    color: #00ff00;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.command-box {
+    background-color: #000;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    font-family: monospace;
+    position: relative;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.input-field {
+    background-color: #001100;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin: 5px;
+    width: 200px;
+}
+
+.options-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-checkbox {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #00ff00;
+    border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.option-checkbox:checked {
+    background-color: #004400;
+}
+
+.option-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #00ff00;
+    font-size: 12px;
+    left: 2px;
+    top: 0px;
+}
+
+.option-label {
+    color: #88ff88;
+    cursor: pointer;
+}
+
+.copy-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: #004400;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #00ff00;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+</style></head>
+<body>
+<canvas class="matrix-bg" id="matrixCanvas"></canvas>
+
+<div class="container">
+    <h1 class="title">DIRB Command Generator</h1>
+
+    <div class="command-section">
+        <h2 class="command-title">Basic Configuration</h2>
+        <input type="text" id="url" class="input-field" placeholder="Target URL" value="http://example.com">
+        <input type="text" id="wordlist" class="input-field" placeholder="Wordlist path" value="/usr/share/wordlists/dirb/common.txt">
+        
+        <div class="options-container">
+            <div class="option-item">
+                <input type="checkbox" id="case-insensitive" class="option-checkbox">
+                <label for="case-insensitive" class="option-label">Case Insensitive (-i)</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="no-recursion" class="option-checkbox">
+                <label for="no-recursion" class="option-label">No Recursion (-r)</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="show-not-found" class="option-checkbox">
+                <label for="show-not-found" class="option-label">Show Not Found (-v)</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="silent-mode" class="option-checkbox">
+                <label for="silent-mode" class="option-label">Silent Mode (-S)</label>
+            </div>
+        </div>
+
+        <h2 class="command-title">Advanced Options</h2>
+        <div class="options-container">
+            <div class="option-item">
+                <input type="checkbox" id="use-auth" class="option-checkbox">
+                <label for="use-auth" class="option-label">Use Authentication</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="use-proxy" class="option-checkbox">
+                <label for="use-proxy" class="option-label">Use Proxy</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="use-cookie" class="option-checkbox">
+                <label for="use-cookie" class="option-label">Use Cookie</label>
+            </div>
+            <div class="option-item">
+                <input type="checkbox" id="custom-agent" class="option-checkbox">
+                <label for="custom-agent" class="option-label">Custom User Agent</label>
+            </div>
+        </div>
+
+        <div id="auth-inputs" style="display: none;">
+            <input type="text" id="username" class="input-field" placeholder="Username">
+            <input type="text" id="password" class="input-field" placeholder="Password">
+        </div>
+
+        <div id="proxy-inputs" style="display: none;">
+            <input type="text" id="proxy-address" class="input-field" placeholder="Proxy (e.g., 127.0.0.1:8080)">
+        </div>
+
+        <div id="cookie-inputs" style="display: none;">
+            <input type="text" id="cookie-value" class="input-field" placeholder="Cookie string">
+        </div>
+
+        <div id="agent-inputs" style="display: none;">
+            <input type="text" id="agent-value" class="input-field" placeholder="User Agent string">
+        </div>
+
+        <div class="command-box" id="dirbCommand">
+dirb http://example.com /usr/share/wordlists/dirb/common.txt
+            <button class="copy-btn">Copy</button>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Tools Hub</a>
+</div>
+
+<script>
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = "01";
+const fontSize = 14;
+const columns = canvas.width/fontSize;
+const drops = [];
+
+for(let x = 0; x < columns; x++) {
+    drops[x] = 1;
+}
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#0F0';
+    ctx.font = fontSize + 'px monospace';
+
+    for(let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
+            drops[i] = 0;
+        
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 50);
+
+// Toggle additional input fields
+document.getElementById('use-auth').addEventListener('change', function() {
+    document.getElementById('auth-inputs').style.display = this.checked ? 'block' : 'none';
+    updateCommand();
+});
+
+document.getElementById('use-proxy').addEventListener('change', function() {
+    document.getElementById('proxy-inputs').style.display = this.checked ? 'block' : 'none';
+    updateCommand();
+});
+
+document.getElementById('use-cookie').addEventListener('change', function() {
+    document.getElementById('cookie-inputs').style.display = this.checked ? 'block' : 'none';
+    updateCommand();
+});
+
+document.getElementById('custom-agent').addEventListener('change', function() {
+    document.getElementById('agent-inputs').style.display = this.checked ? 'block' : 'none';
+    updateCommand();
+});
+
+// Add event listeners to all inputs
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', updateCommand);
+    input.addEventListener('keyup', updateCommand);
+});
+
+function updateCommand() {
+    const url = document.getElementById('url').value || 'http://example.com';
+    const wordlist = document.getElementById('wordlist').value || '/usr/share/wordlists/dirb/common.txt';
+    
+    let command = `dirb ${url} ${wordlist}`;
+
+    if (document.getElementById('case-insensitive').checked) command += ' -i';
+    if (document.getElementById('no-recursion').checked) command += ' -r';
+    if (document.getElementById('show-not-found').checked) command += ' -v';
+    if (document.getElementById('silent-mode').checked) command += ' -S';
+
+    if (document.getElementById('use-auth').checked) {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        if (username && password) {
+            command += ` -u ${username}:${password}`;
+        }
+    }
+
+    if (document.getElementById('use-proxy').checked) {
+        const proxy = document.getElementById('proxy-address').value;
+        if (proxy) {
+            command += ` -p ${proxy}`;
+        }
+    }
+
+    if (document.getElementById('use-cookie').checked) {
+        const cookie = document.getElementById('cookie-value').value;
+        if (cookie) {
+            command += ` -c ${cookie}`;
+        }
+    }
+
+    if (document.getElementById('custom-agent').checked) {
+        const agent = document.getElementById('agent-value').value;
+        if (agent) {
+            command += ` -a "${agent}"`;
+        }
+    }
+
+    document.getElementById('dirbCommand').innerHTML = command + '<button class="copy-btn">Copy</button>';
+}
+
+// Copy button functionality
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('copy-btn')) {
+        const commandBox = e.target.parentElement;
+        const command = commandBox.textContent.trim().replace('Copy', '').trim();
+        
+        navigator.clipboard.writeText(command).then(() => {
+            e.target.textContent = 'Copied!';
+            setTimeout(() => {
+                e.target.textContent = 'Copy';
+            }, 2000);
+        });
+    }
+});
+
+// Initialize command
+updateCommand();
+
+// Resize handler
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+</body></html>
